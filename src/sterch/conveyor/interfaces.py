@@ -50,16 +50,24 @@ class ILastWorker(IWorker, IInQueueMixin):
 
 class IRegularWorker(IWorker, IInQueueMixin, IOutQueueMixin):
     """ Regular worker. It gets tasks from input queue and puts to output queue """
-    
-class IGroup(ISequence):
+
+class IDelayedFinish(Interface):
+    """ Interface of delayed finish.
+        It describes situation when stopping is parallel task 
+        and may take a lot of time.
+    """
+    def stop():
+        """ Do something to stop (f.e. fire event) """
+        
+    def is_finished():
+        """ Check was it really finished """
+        
+class IGroup(ISequence, IDelayedFinish):
     """ Sequence of workers """
     name = TextLine(title=u"Group name", required=True, readonly=True)
     
-    def start_all():
+    def start():
         """" start all workers """
-    
-    def stop_all():
-        """" notify all workers to stop """
     
     def filter_dead_workers():
         """ removes dead workers from sequence """
@@ -67,7 +75,7 @@ class IGroup(ISequence):
     def live_count():
         """ number of active workers """
 
-class IStage(Interface, IEventMixin, IDelayMixin):
+class IStage(IDelayedFinish, IEventMixin, IDelayMixin):
     """ Data processing stage """
     name = TextLine(title=u"Stage name", required=True, readonly=True)
     
@@ -76,15 +84,7 @@ class IStage(Interface, IEventMixin, IDelayMixin):
     
     def start():
         """ starts stage """
-        
-    def stop():
-        """ performs actions to stop stage. """
-        
-    def is_finished():
-        """ Returns Trus is stage is finished. 
-            It makes sense to check only after calling stop() method.
-        """
-     
+            
 class IInitialStage(IStage, IOutQueueMixin):
     """ Initial data processing stage """
 
@@ -97,12 +97,8 @@ class IRegularStage(IStage, IInQueueMixin, IOutQueueMixin):
                 required=True,
                 readonly=True)
     
-class IConveyor(IThread, IEventMixin):
+class IConveyor(IThread, IDelayMixin):
     """ Conveyor of parallel data processing.
         When starts it MUST start all stages' workers
     """
-    
     stages = Tuple(title=u"All stages ordered.", readonly=True, required=True)
-    
-    def stop_all():
-        """ Fires events to stop all stages """

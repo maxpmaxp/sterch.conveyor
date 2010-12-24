@@ -43,7 +43,7 @@ class StageBase(object):
         
     def stop(self):
         """ Tries to stop stage """
-        self.group.stop_all()
+        self.group.stop()
         
     def is_finished(self):
         """ Checks does group of workers finish its activity """

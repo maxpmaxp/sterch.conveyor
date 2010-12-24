@@ -33,15 +33,19 @@ class Group(UserList):
             self.append(IWorker(factory(*args, **kwargs)))
         self.locked = Lock()
     
-    def start_all(self):
+    def start(self):
         """ start all workers """
         with self.locked:
             map(lambda t:IThread(t).start(), self)
     
-    def stop_all(self):
+    def stop(self):
         """ Fire event to stop all workers """
         with self.locked:
             map(lambda t:IWorker(t).event.set(), self)
+            
+    def is_finished(self):
+        """ Check workers to be stopped """
+        return self.live_count() == 0
     
     def filter_dead_workers(self):
         """ remove dead workers from the group """
