@@ -35,6 +35,10 @@ class InQueueMixin(object):
         """ Does queue have unfinished tasks. """
         return self.in_queue.empty()
     
+    def tasks_count(self):
+        """ Return number of unfinished tasks. """
+        return self.in_queue.qsize()
+
     @CachedProperty
     def in_queue(self):
         if IQueue(self._in_queue, None): 

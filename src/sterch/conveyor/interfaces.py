@@ -80,7 +80,13 @@ class IStage(IDelayedFinish, IEventMixin, IDelayMixin):
     name = TextLine(title=u"Stage name", required=True, readonly=True)
     
     def has_tasks():
-        """ Returns True if stage has unfinished tasks finished, False otherwise. """
+        """ Returns True if stage has unprocessed tasks finished, False otherwise. """
+
+    def tasks_count():
+        """ Returns number of unprocessed tasks. """
+        
+    def workers_count():
+        """ Returns number of live workers. """
     
     def start():
         """ starts stage """

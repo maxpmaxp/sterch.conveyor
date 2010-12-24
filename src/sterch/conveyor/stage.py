@@ -54,6 +54,13 @@ class StageBase(object):
         """ Must be implemented in descendants """
         raise NotImplementedError("Not implemented yet.")
     
+    def tasks_count(self):
+        """ Must be implemented in descendants """
+        raise NotImplementedError("Not implemented yet.")
+    
+    def workers_count(self):
+       return self.group.live_count() 
+    
 class FirstStage(StageBase):
     """ First data processing stage. 
         Initial tasks generation.
@@ -78,6 +85,10 @@ class FirstStage(StageBase):
     def has_tasks(self):
         """ Initial stage has no unfinished tasks."""
         return False
+    
+    def tasks_count(self):
+        """ Initial stage has no unfinished tasks."""
+        return 0
     
 class LastStage(StageBase, InQueueMixin):
     """ Last data processing stage. 
