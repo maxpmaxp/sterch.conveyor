@@ -29,7 +29,7 @@ class IOutQueueMixin(Interface):
 class IInQueueMixin(Interface):
     in_queue = Object(title=u"Queue to get tasks", schema=IQueue, readonly=True, required=True)
     
-class IWorkerBase(IThread,
+class IWorker(IThread,
                   IEventMixin,
                   IDelayMixin):
     """ Wroker base interface """
@@ -39,20 +39,21 @@ class IWorkerBase(IThread,
         """ Main worker activity. 
             MUST be generator.  """
 
-class IFirstWorker(IWorkerBase, IOutQueueMixin):
+class IFirstWorker(IWorker, IOutQueueMixin):
     """ First worker that creates initial tasks queue """
     
     def activity():
         """ Activity have no input args. This is initial tasks generator. """
     
-class ILastWorker(IWorkerBase, IInQueueMixin):
+class ILastWorker(IWorker, IInQueueMixin):
     """ Last worker that processes last tasks que queue """
 
-class IWorker(IWorkerBase, IInQueueMixin, IOutQueueMixin):
+class IRegularWorker(IWorker, IInQueueMixin, IOutQueueMixin):
     """ Regular worker. It gets tasks from input queue and puts to output queue """
     
 class IGroup(ISequence):
     """ Sequence of workers """
+    name = TextLine(title=u"Group name", required=True, readonly=True)
     
     def start_all():
         """" start all workers """
@@ -66,19 +67,31 @@ class IGroup(ISequence):
     def live_count():
         """ number of active workers """
 
-class IStageBase(Interface, IEventMixin, IDelayMixin):
+class IStage(Interface, IEventMixin, IDelayMixin):
     """ Data processing stage """
-    event = Object(title=u"Event to stop all stage workers", schema=IEvent, requred=True, readonly=True)
     name = TextLine(title=u"Stage name", required=True, readonly=True)
-    group = Object(title=u"Group of workers", required=True, readonly=True)
+    
+    def has_tasks():
+        """ Returns True if stage has unfinished tasks finished, False otherwise. """
+    
+    def start():
+        """ starts stage """
+        
+    def stop():
+        """ performs actions to stop stage. """
+        
+    def is_finished():
+        """ Returns Trus is stage is finished. 
+            It makes sense to check only after calling stop() method.
+        """
      
-class IInitialStage(IStageBase, IOutQueueMixin):
+class IInitialStage(IStage, IOutQueueMixin):
     """ Initial data processing stage """
 
-class IFinalStage(IStageBase, IInQueueMixin):
+class IFinalStage(IStage, IInQueueMixin):
     """ Final data processing stage """
 
-class IStage(IStageBase, IInQueueMixin, IOutQueueMixin):
+class IRegularStage(IStage, IInQueueMixin, IOutQueueMixin):
     """ Regular data processing stage. Requires both input and output queues """
     order = Int(title=u"Delay in sec. between activity cycles", 
                 required=True,

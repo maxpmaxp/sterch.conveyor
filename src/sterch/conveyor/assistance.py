@@ -30,6 +30,11 @@ class OutQueueMixin(object):
         return getUtility(IQueue, name=self._out_queue)
 
 class InQueueMixin(object):
+    
+    def has_tasks(self):
+        """ Does queue have unfinished tasks. """
+        return self.in_queue.empty()
+    
     @CachedProperty
     def in_queue(self):
         if IQueue(self._in_queue, None): 
@@ -48,7 +53,7 @@ class LogMixin(object):
     def log(self):
         return queryUtility(ILog)
     
-    def traceback(self):
+    def traceback(self, ex):
         msg = "ERROR:" + str(ex)
         tb = StringIO()
         exceptionType, exceptionValue, exceptionTraceback = sys.exc_info()

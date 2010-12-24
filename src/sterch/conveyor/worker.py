@@ -6,9 +6,8 @@
 # All right reserved, 2010
 #######################################################################
 
-""" Workers for sterch.conveyor package
+""" Workers for sterch.conveyor package """
 
-"""
 __author__  = "Polshcha Maxim (maxp@sterch.net)"
 __license__ = "ZPL"
 
@@ -17,7 +16,7 @@ import traceback
 import types
 
 from assistance import InQueueMixin, OutQueueMixin, EventMixin, LogMixin
-from interfaces import IWorker, IFirstWorker, ILastWorker
+from interfaces import IFirstWorker, ILastWorker, IRegularWorker
 from Queue import Empty, Full
 from threading import Thread
 from time import sleep
@@ -31,7 +30,7 @@ class FirstWorker(EventMixin,
     """ Initial worker """
     implements(IFirstWorker)
     
-    def __init__(self, out_queue, event, delay, activity): 
+    def __init__(self, out_queue, event, delay, activity=None): 
         """    out_queue --- either object that provides IQueue or IQueue utility name
                event     --- either object that provides IEvent or IEvent utility name 
                delay     --- delay between activity cycles
@@ -40,7 +39,8 @@ class FirstWorker(EventMixin,
         self._out_queue = out_queue
         self.delay = delay
         self._event = event
-        self.activity = activity
+        if activity:
+            self.activity = lambda self, *args,**kwargs: activity(*args, **kwargs)
         Thread.__init__(self)
     
     def activity(self):
@@ -54,14 +54,13 @@ class FirstWorker(EventMixin,
                 for task in self.activity():
                     while True:
                         try:
-                            if self.event.isSet(): return
                             self.out_queue.put(task, timeout=self.delay)
                             break
                         except Full, ex:
                             pass
             except Exception, ex:
                 # Thread must stop if and only if event is set
-                self.traceback()
+                self.traceback(ex)
 
 class LastWorker(EventMixin, 
                  InQueueMixin,
@@ -70,7 +69,7 @@ class LastWorker(EventMixin,
     """ Last worker """
     implements(ILastWorker)
     
-    def __init__(self, in_queue, event, delay, activity): 
+    def __init__(self, in_queue, event, delay, activity=None): 
         """    in_queue --- either object that provides IQueue or IQueue utility name
                event     --- either object that provides IEvent or IEvent utility name 
                delay     --- delay between activity cycles
@@ -80,6 +79,8 @@ class LastWorker(EventMixin,
         self.delay = delay
         self._event = event
         self.activity = activity
+        if activity:
+            self.activity = lambda self, *args,**kwargs: activity(*args, **kwargs)
         Thread.__init__(self)
     
     def activity(self):
@@ -97,7 +98,7 @@ class LastWorker(EventMixin,
                     pass
             except Exception, ex:
                 # Thread must stop if and only if event is set
-                self.traceback()
+                self.traceback(ex)
 
 
 class Worker(EventMixin, 
@@ -108,9 +109,9 @@ class Worker(EventMixin,
     """ Regular worker to process elements from input queue to output queue.
         Could be stopped be setting event. 
     """
-    implements(IWorker)
+    implements(IRegularWorker)
     
-    def __init__(self, in_queue, out_queue, event, delay, activity):
+    def __init__(self, in_queue, out_queue, event, delay, activity=None):
         """ 
             in_queue --- input queue
             out_queue --- output queue
@@ -124,6 +125,8 @@ class Worker(EventMixin,
         self.delay = delay
         self._event = event
         self.activity = activity
+        if activity:
+            self.activity = lambda self, *args,**kwargs: activity(*args, **kwargs)
         Thread.__init__(self)
         
     def activity(self, item):
@@ -139,7 +142,6 @@ class Worker(EventMixin,
                     for new_task in self.activity(task):
                         while True:
                             try:
-                                if self.event.isSet(): return
                                 self.out_queue.put(new_task, timeout=self.delay)
                                 break
                             except Full, ex:
@@ -148,4 +150,4 @@ class Worker(EventMixin,
                     pass
             except Exception, ex:
                 # Thread must stop if and only if event is set
-                self.traceback()
+                self.traceback(ex)
