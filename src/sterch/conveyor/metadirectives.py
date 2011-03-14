@@ -12,7 +12,7 @@
 __author__  = "Polshcha Maxim (maxp@sterch.net)"
 __license__ = "ZPL"
 
-from sterch.threading.interfaces import IName
+from sterch.threading.metadirectives import IName
 from zope.interface import Interface, invariant, Invalid
 from zope.configuration.fields import GlobalObject
 from zope.schema import TextLine, Int, Float
@@ -39,10 +39,10 @@ class IOutQueue(Interface):
     """ Output queue interface """
     out_queue = TextLine(title=u"IQueue utility name to be used as output tasks queue.", required=True)
     
-class IInitStage(IStageBase, IOutQueue):
+class IInitStageDirective(IStageBase, IOutQueue):
     """ Initial stage. Requires output queue only to put new tasks. """
     
-class IFinalStage(IStageBase, IInQueue):
+class IFinalStageDirective(IStageBase, IInQueue):
     """ Final stage. Requires input queue only to get tasks. """
 
 class IStageDirective(IStageBase, IInQueue, IOutQueue):

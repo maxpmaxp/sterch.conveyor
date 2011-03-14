@@ -1,0 +1,8 @@
+<configure xmlns="http://namespaces.sterch.net/threading">
+	<event name="Event #1"/>
+	<event name="Event #2"/>
+	<event name="Event #3"/>
+	<event name="Event #4"/>
+	<event name="Event #5"/>
+	<event name="Event #6"/>
+</configure>

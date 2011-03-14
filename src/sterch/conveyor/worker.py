@@ -36,13 +36,13 @@ class FirstWorker(EventMixin,
                delay     --- delay between activity cycles
                activity --- callable represents worker activity
         """
+        Thread.__init__(self)
         self._out_queue = out_queue
         self.delay = delay
         self._event = event
         if activity:
             self.activity = lambda self, *args,**kwargs: activity(*args, **kwargs)
-        Thread.__init__(self)
-    
+                
     def activity(self):
         raise NotImplementedError("Must be defined")
     
@@ -75,13 +75,13 @@ class LastWorker(EventMixin,
                delay     --- delay between activity cycles
                activity --- callable represents worker activity
         """
+        Thread.__init__(self)
         self._in_queue = in_queue
         self.delay = delay
         self._event = event
         self.activity = activity
         if activity:
             self.activity = lambda self, *args,**kwargs: activity(*args, **kwargs)
-        Thread.__init__(self)
     
     def activity(self):
         raise NotImplementedError("Must be defined")
@@ -120,6 +120,7 @@ class Worker(EventMixin,
             activity --- callable represents worker activity. Must accept only one argument --- item.
                         Returned value will be placed to out_queue if not None.
         """
+        Thread.__init__(self)
         self._in_queue = in_queue
         self._out_queue = out_queue
         self.delay = delay
@@ -127,7 +128,6 @@ class Worker(EventMixin,
         self.activity = activity
         if activity:
             self.activity = lambda self, *args,**kwargs: activity(*args, **kwargs)
-        Thread.__init__(self)
         
     def activity(self, item):
         raise NotImplementedError("Must be implemented")
@@ -151,3 +151,5 @@ class Worker(EventMixin,
             except Exception, ex:
                 # Thread must stop if and only if event is set
                 self.traceback(ex)
+                
+RegularWorker = Worker

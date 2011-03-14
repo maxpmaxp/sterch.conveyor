@@ -15,10 +15,10 @@ from sterch.queue.interfaces import IQueue
 from sterch.threading.interfaces import IThread, IEvent
 from zope.interface import Interface
 from zope.interface.common.sequence import ISequence
-from zope.schema import Object, Int, Tuple
+from zope.schema import Object, Int, Tuple, TextLine
 
 class IEventMixin(Interface):
-    event = Object(title=u"Event", schema=IEvent, requred=True, readonly=True)
+    event = Object(title=u"Event", schema=IEvent, required=True, readonly=True)
     
 class IDelayMixin(Interface):
     delay = Int(title=u"Delay in sec. between activity cycles", min=0, default=0, required=True, readonly=True)
@@ -33,7 +33,7 @@ class IWorker(IThread,
                   IEventMixin,
                   IDelayMixin):
     """ Wroker base interface """
-    event = Object(title=u"Event to stop worker", schema=IEvent, requred=True, readonly=True)
+    event = Object(title=u"Event to stop worker", schema=IEvent, required=True, readonly=True)
     
     def activity(*args, **kwargs):
         """ Main worker activity. 
@@ -91,18 +91,15 @@ class IStage(IDelayedFinish, IEventMixin, IDelayMixin):
     def start():
         """ starts stage """
             
-class IInitialStage(IStage, IOutQueueMixin):
+class IFirstStage(IStage, IOutQueueMixin):
     """ Initial data processing stage """
 
-class IFinalStage(IStage, IInQueueMixin):
+class ILastStage(IStage, IInQueueMixin):
     """ Final data processing stage """
 
 class IRegularStage(IStage, IInQueueMixin, IOutQueueMixin):
     """ Regular data processing stage. Requires both input and output queues """
-    order = Int(title=u"Delay in sec. between activity cycles", 
-                required=True,
-                readonly=True)
-    
+        
 class IConveyor(IThread, IDelayMixin):
     """ Conveyor of parallel data processing.
         When starts it MUST start all stages' workers

@@ -11,7 +11,7 @@
 __author__  = "Polshcha Maxim (maxp@sterch.net)"
 __license__ = "ZPL"
 
-from assistance import InQueueMixIn
+from assistance import InQueueMixin
 from group import Group
 from interfaces import IGroup, IRegularStage, IFirstStage, ILastStage
 from zope.interface import implements
@@ -67,19 +67,19 @@ class FirstStage(StageBase):
     """
     implements(IFirstStage)
     
-    def __init__(self, name, qty, out_queue, event, delay, activity):
+    def __init__(self, name, quantity, out_queue, event, delay, activity):
         """ 
             name --- stage name
-            qty --- number of workers to process stage
+            quantity --- number of workers to process stage
             out_queue --- queue to put tasks
             event --- event to stop all workers
             delay --- processing delay
             activity --- callable represents stage activity 
         """
-        w_factory = getUtility(IFacoty, name="sterch.conveyor.FirstWorker") 
-        g_factory = getUtility(IFacoty, name="sterch.conveyor.Group")
+        w_factory = getUtility(IFactory, name="sterch.conveyor.FirstWorker") 
+        g_factory = getUtility(IFactory, name="sterch.conveyor.Group")
         w_args = (out_queue, event, delay, activity)
-        group = g_factory(qty, w_factory, *w_args)
+        group = g_factory(quantity, w_factory, *w_args)
         StageBase.__init__(self, name, group)
         
     def has_tasks(self):
@@ -96,19 +96,19 @@ class LastStage(StageBase, InQueueMixin):
     """
     implements(ILastStage)
     
-    def __init__(self, name, qty, in_queue, event, delay, activity):
+    def __init__(self, name, quantity, in_queue, event, delay, activity):
         """ 
             name --- stage name
-            qty --- number of workers to process stage
+            quantity --- number of workers to process stage
             in_queue --- queue to get tasks
             event --- event to stop all workers
             delay --- processing delay
             activity --- callable represents stage activity 
         """
-        w_factory = getUtility(IFacoty, name="sterch.conveyor.LastWorker") 
-        g_factory = getUtility(IFacoty, name="sterch.conveyor.Group")
+        w_factory = getUtility(IFactory, name="sterch.conveyor.LastWorker") 
+        g_factory = getUtility(IFactory, name="sterch.conveyor.Group")
         w_args = (in_queue, event, delay, activity)
-        group = g_factory(qty, w_factory, *w_args)
+        group = g_factory(quantity, w_factory, *w_args)
         StageBase.__init__(self, name, group)
 
 class RegularStage(StageBase, InQueueMixin):
@@ -116,25 +116,18 @@ class RegularStage(StageBase, InQueueMixin):
         Take tasks from input queue and put next tasks to output queue.
     """
     implements(IRegularStage)
-    def __init__(self, name, order, qty, in_queue, out_queue, event, delay, activity):
+    def __init__(self, name, quantity, in_queue, out_queue, event, delay, activity):
         """ 
             name --- stage name
-            order --- stage number in data processing flow. Used to order stages
-            qty --- number of workers to process stage
+            quantity --- number of workers to process stage
             in_queue --- queue to get tasks
             out_queue --- queue to put next tasks
             event --- event to stop all workers
             delay --- processing delay
             activity --- callable represents stage activity 
         """
-        self._order = order
-        w_factory = getUtility(IFacoty, name="sterch.conveyor.RegularWorker") 
-        g_factory = getUtility(IFacoty, name="sterch.conveyor.Group")
+        w_factory = getUtility(IFactory, name="sterch.conveyor.RegularWorker") 
+        g_factory = getUtility(IFactory, name="sterch.conveyor.Group")
         w_args = (in_queue, event, delay, activity)
-        group = g_factory(qty, w_factory, *w_args)
+        group = g_factory(quantity, w_factory, *w_args)
         StageBase.__init__(self, name, group)
-    
-    @propery
-    def order(self):
-        """ This is Read Only attribute according to IRegularStage"""
-        return self._order

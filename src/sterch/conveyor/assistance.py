@@ -65,5 +65,5 @@ class LogMixin(object):
         msg = msg + "\n" + tb.getvalue()
         if self.log: 
             self.log.message(msg)
-        else
+        else:
             print msg

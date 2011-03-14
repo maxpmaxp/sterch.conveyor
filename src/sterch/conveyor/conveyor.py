@@ -14,20 +14,20 @@ from assistance import LogMixin
 from interfaces import IConveyor, IStage
 from threading import Thread
 from time import sleep 
-from zope.cachedescriptors import CachedProperty
+from zope.cachedescriptors.property import CachedProperty
 from zope.interface import implements
 
 class Conveyor(Thread, LogMixin):
     """ Simple IConveyor implementation """
     implements(IConveyor)
     
-    def __init__(self, name, delay, stages):
+    def __init__(self, name, stages, delay=5):
         """ delay --- delay in secs. between stages check
             stages --- ordered list of stages to process data """
+        Thread.__init__(self)
         self.name = name
         self._delay = delay
         self._stages = [IStage(s) for s in stages]
-        Thread.__init__(self)
 
     @CachedProperty
     def stages(self): return self._stages

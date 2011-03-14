@@ -32,11 +32,6 @@
 
 	<utility
 	    provides="zope.component.interfaces.IFactory"
-	    component=".stage.Group"
-    	name="sterch.conveyor.Group"/>
-
-	<utility
-	    provides="zope.component.interfaces.IFactory"
 	    component=".stage.FirstStage"
     	name="sterch.conveyor.FirstStage"/>
 		
@@ -56,7 +51,7 @@
     	name="sterch.conveyor.Group"/>
 
 	<utility
-	    provides="zope.component.interfaces.IConveyor"
+	    provides="zope.component.interfaces.IFactory"
 	    component=".conveyor.Conveyor"
     	name="sterch.conveyor.Conveyor"/>
 			
