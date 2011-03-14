@@ -16,46 +16,19 @@
      
     -->
 
-	<directive
-          namespace="http://namespaces.sterch.net/threading"
-          name="thread"
-          schema=".metadirectives.IThreadDirective"
-          handler=".metaconfigure.thread"/>
-		  
-	<directive
-          namespace="http://namespaces.sterch.net/threading"
-          name="lock"
-          schema=".metadirectives.ILockDirective"
-          handler=".metaconfigure.lock"/>
+   <complexDirective
+     name="conveyor"
+     schema=".metaditectives.IConveyorDirective"
+     handler=".metaconfigure.ConveyorDirective">
+    
+		<subdirective
+		   name="init_stage"
+		   schema=".metadirectives.IInitStageDirective" />
+		
+		<subdirective
+		   name="final_stage"
+		   schema=".metadirectives.IFinalStageDirective" />
 
-	<directive
-          namespace="http://namespaces.sterch.net/threading"
-          name="rlock"
-          schema=".metadirectives.IRLockDirective"
-          handler=".metaconfigure.rlock"/>
-
-	<directive
-          namespace="http://namespaces.sterch.net/threading"
-          name="condition"
-          schema=".metadirectives.IConditionDirective"
-          handler=".metaconfigure.condition"/>
-
-	<directive
-          namespace="http://namespaces.sterch.net/threading"
-          name="semaphore"
-          schema=".metadirectives.ISemaphoreDirective"
-          handler=".metaconfigure.semaphore"/>
-
-	<directive
-          namespace="http://namespaces.sterch.net/threading"
-          name="event"
-          schema=".metadirectives.IEventDirective"
-          handler=".metaconfigure.event"/>
-
-	<directive
-          namespace="http://namespaces.sterch.net/threading"
-          name="timer"
-          schema=".metadirectives.ITimerDirective"
-          handler=".metaconfigure.timer"/>
+    </complexDirective>
 
 </configure>

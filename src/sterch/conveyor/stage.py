@@ -111,7 +111,6 @@ class LastStage(StageBase, InQueueMixin):
         group = g_factory(qty, w_factory, *w_args)
         StageBase.__init__(self, name, group)
 
-
 class RegularStage(StageBase, InQueueMixin):
     """ Regular data processing stage. 
         Take tasks from input queue and put next tasks to output queue.

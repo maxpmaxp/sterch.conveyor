@@ -12,81 +12,76 @@
 __author__  = "Polshcha Maxim (maxp@sterch.net)"
 __license__ = "ZPL" 
 
-import interfaces
-import threading
+from interfaces import IFirstWorker, ILastWorker, IRegularWorker
+from zope.component import createObject, getUtility
+from zope.component.interfaces import IFactory 
+from zope.configuration.exceptions import ConfigurationError
 
-from zope.component.zcml import handler
-
-def thread(_context, target, name=""):
-    """ handler for <thread .../> directive """
-    obj = threading.Thread(target=target)
-    _context.action(
-        discriminator = ('utility', interfaces.IThread, name),
-        callable = handler,
-        args = ('registerUtility',
-                obj, interfaces.IThread, name)
-        )
+class Conveyor(object):
+    """ Conveyor directive handler """
     
-def lock(_context, name=""):
-    """ handler for <lock .../> directive """
-    obj = threading.Lock()
-    _context.action(
-        discriminator = ('utility', interfaces.ILock, name),
-        callable = handler,
-        args = ('registerUtility',
-                obj, interfaces.ILock, name)
-        )
-    
-def rlock(_context, name=""):
-    """ handler for <rlock .../> directive """
-    obj = threading.RLock()
-    _context.action(
-        discriminator = ('utility', interfaces.IRLock, name),
-        callable = handler,
-        args = ('registerUtility',
-                obj, interfaces.IRLock, name)
-        )
-    
-def condition(_context, lock=None, name=""):
-    """ handler for <condition .../> directive """
-
-    obj = threading.Condition()
-    _context.action(
-        discriminator = ('utility', interfaces.ICondition, name),
-        callable = handler,
-        args = ('registerUtility',
-                obj, interfaces.ICondition, name)
-        )
-    
-def semaphore(_context, value=1, name=""):
-    """ handler for <semaphore .../> directive """
-
-    obj = threading.Semaphore(value)
-    _context.action(
-        discriminator = ('utility', interfaces.ISemaphore, name),
-        callable = handler,
-        args = ('registerUtility',
-                obj, interfaces.ISemaphore, name)
-        )
-    
-def event(_context, name=""):
-    """ handler for <event .../> directive """
-
-    obj = threading.Event()
-    _context.action(
-        discriminator = ('utility', interfaces.IEvent, name),
-        callable = handler,
-        args = ('registerUtility',
-                obj, interfaces.IEvent, name)
-        )
-
-def timer(_context, interval, function, name=""):
-    """ handler for <timer .../> directive """
-
-    obj = threading.Timer(interval, function)
-    _context.action(
-        discriminator = ('utility', interfaces.ITimer, name),
-        callable = handler,
-        args = ('registerUtility',
-                obj, interfaces.ITimer, name)
+    def __init__(self, _context, name):
+        self._context = _context
+        self.name = name
+        self.init_stage = False
+        self.final_stage = False
+        self.stages = []
+        
+    def init_stage(self, _context, **kwargs):
+        """ init_stage subdirective processing """
+        self.init_stage = kwargs
+        
+        
+    def final_stage(self, _context, **kwargs):
+        """ final_stage subdirective processing """
+        self.final_stage = kwargs
+        
+    def stage(self, _context, **kwargs):
+        """ stage subdirective procesing """
+        self.stages.append(kwargs)
+        
+    def __call__(self):
+        """ whole directive processing  """
+        if not self.init_stage: raise ConfigurationError(u"No initial stage defined")
+        if not self.final_stage: raise ConfigurationError(u"No final stage defined")
+        # trying to build conveyor chain
+        ordered_stages = [self.init_stage]
+        curq = self.init_stage['out_queue']
+        in_queues = []
+        out_queues = [cur_queue]
+        while self.stages:
+            s = self.stages.pop()
+            if s.in_queue in in_queues: raise ConfigurationError(u"Input queue could be used only in one stage.")
+            if s.out_queue in out_queues: raise ConfigurationError(u"Output queue could be used only in one stage.")
+            if s.in_queue == curq:
+                ordered_stages.append(s)
+                curq = s.out_queue
+                in_queues.append(s.in_queue)
+                out_queues.append(s.out_queue)
+            else:
+                self.stages = [s,] + self.stages
+        if stages: ConfigurationError(u"There are dummy stages within the conveyor")
+        if stages[:-1]['out_queue'] != self.final_stage['in_queue']:
+            ConfigurationError(u"Conveyor must be finished with final_stage.")            
+        stages.append(self.final_stage)
+        # constructing the conveyor
+        __stages = [] 
+        # 1st stage
+        s = stages[0]
+        s['event'] = s['event'] if s.get('event') else createObject('sterch.threading.Event')
+        stages = stages[1:]
+        __stages.append(createObject('sterch.conveyor.FirstStage', **s))
+        # middle stages
+        for s in stages[:-1]:
+            s['event'] = s['event'] if s.get('event') else createObject('sterch.threading.Event')
+            __stages.append(createObject('sterch.conveyor.RegularStage', **s))
+        #last stage
+        s = stages[:-1]
+        s['event'] = s['event'] if s.get('event') else createObject('sterch.threading.Event')
+        __stages.append(createObject('sterch.conveyor.FinalStage', **s))
+        conveyor = createObject('sterch.conveyor.Conveyor', self.name, __stages)
+        self._context.action(
+            discriminator = ('utility', IConveyor, self.name),
+            callable = handler,
+            args = ('registerUtility', conveyor, IConveyor, self.name)
         )

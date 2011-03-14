@@ -107,4 +107,5 @@ class IConveyor(IThread, IDelayMixin):
     """ Conveyor of parallel data processing.
         When starts it MUST start all stages' workers
     """
+    name = TextLine(title=u"Conveyor name", required=True, readonly=True)
     stages = Tuple(title=u"All stages ordered.", readonly=True, required=True)

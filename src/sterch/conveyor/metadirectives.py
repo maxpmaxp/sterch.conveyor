@@ -6,52 +6,44 @@
 # All right reserved, 2010
 #######################################################################
 
-"""ZCML directives interfaces for the ZTK based sterch.threading package
+"""ZCML directives interfaces for the ZTK based sterch.conveyor package
 
 """
 __author__  = "Polshcha Maxim (maxp@sterch.net)"
 __license__ = "ZPL"
 
-from interfaces import ILock
-from zope.interface import Interface
+from sterch.threading.interfaces import IName
+from zope.interface import Interface, invariant, Invalid
 from zope.configuration.fields import GlobalObject
 from zope.schema import TextLine, Int, Float
-
-class IName(Interface):
-    """ Utility name """
-    name = TextLine(title=u"Name", required=False)
        
-class ILockDirective(IName):
-    """ <lock .../> directive interface """
+class IConveyorDirective(IName):
+    """ <conveyor ...>  complex directive interface """
     
-class IRLockDirective(IName):
-    """ <rlock .../> directive interface """
+class IStageBase(IName):
+    """ generic stage fields """
+    activity = GlobalObject(title=u"Callable object to process tasks on the stage.",
+                            constraint=lambda obj:hasattr(obj,'__call__'))
+    quantity = Int(title=u"Number of workers for the stage.", min=0, required=True)
+    delay = Int(title=u"Delay to wait tasks in queue (sec., 3 by default)", min=0, required=False, default=3)
+    event = TextLine(title=u"IEvent utility name to stop workers.",
+                     description=u"""Optional. If not defined event ill be created.
+                                   Could be used for other tasks synchronization.""",
+                     required=False)
+            
+class IInQueue(Interface):
+    """ Input queue interface """
+    in_queue = TextLine(title=u"IQueue utility name to be used as input tasks queue.", required=True) 
+    
+class IOutQueue(Interface):
+    """ Output queue interface """
+    out_queue = TextLine(title=u"IQueue utility name to be used as output tasks queue.", required=True)
+    
+class IInitStage(IStageBase, IOutQueue):
+    """ Initial stage. Requires output queue only to put new tasks. """
+    
+class IFinalStage(IStageBase, IInQueue):
+    """ Final stage. Requires input queue only to get tasks. """
 
-class IThreadDirective(IName):
-    """ <thread .../> directive interface """
-    
-    target = GlobalObject(title=u"Callable object (i.e. function, object, class)", 
-                          required=True)
-
-class IConditionDirective(IName):
-    """ <condition .../> directive interface """
-    lock = GlobalObject(title=u"Lock object to use.",
-                    description=u"If the lock argument is given and not None, it must be a object that implements ILock is used as the underlying lock. Otherwise, a new RLock object is created and used as the underlying lock.", 
-                    required=False)
-    
-class ISemaphoreDirective(IName):
-    """ <semaphore .../> directive interface """
-    value = Int(title=u"Initial value for the internal counter.",
-                description=u"Defaults to 1. Must be positive or zero.",
-                required=False,
-                min=0,
-                default=1)
-
-class IEventDirective(IName):
-    """ <event .../> directive interface """
-    
-class ITimerDirective(IName):
-    """ <timer .../> directive interface """
-    interval = Float(title=u"Interval (in sec.) before its action has begun.", min=0.0, required=True)
-    function = GlobalObject(title=u"Callable object (i.e. function, object, class)", 
-                            required=True)
+class IStageDirective(IStageBase, IInQueue, IOutQueue):
+    """ Regular stage. Requires both input and output queues. """      

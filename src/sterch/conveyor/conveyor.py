@@ -21,14 +21,14 @@ class Conveyor(Thread, LogMixin):
     """ Simple IConveyor implementation """
     implements(IConveyor)
     
-    def __init__(self, delay, stages):
+    def __init__(self, name, delay, stages):
         """ delay --- delay in secs. between stages check
             stages --- ordered list of stages to process data """
+        self.name = name
         self._delay = delay
         self._stages = [IStage(s) for s in stages]
         Thread.__init__(self)
 
-    
     @CachedProperty
     def stages(self): return self._stages
     

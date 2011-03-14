@@ -1,43 +1,31 @@
  ---------------
  ZCML directives
  ---------------
-<conveyor>
+<conveyor name="Conveyor #1">
 
-<first_group
-	name="1"
-	worker = ".class,Worker"
-	worker_name = "initial_worker"
-	quantity = "50"
-	delay = "5"
-	out_queue = ".class.Queue"
-	out_queue_name = "initial_queue"
-	event = ".class.Event"
-	event_name ="event_"
-/>
+	<init_stage
+		name="Initial stage"
+		activity = "callable"
+		quantity = "50"
+		delay = "5"
+		out_queue = "out-queue-name"
+		event = "event-name"/>
 
-<last_group
-	name="1"
-	worker = ".class,Worker"
-	worker_name = "initial_worker"
-	quantity = "50"
-	delay = "5"
-	in_queue = ".class.Queue"
-	in_queue_name = "initial_queue"
-	event = ".class.Event"
-	event_name ="event_"
-/>
+	<final_stage
+		name="Final stage"
+		activity = "callable"
+		quantity = "50"
+		in_queue = "in-queue-name"
+		delay = "5"
+		event = "event-name"/>
 
-<group
-	name="1"
-	stop_order = "1"	
-	worker = ".class,Worker"
-	worker_name = "initial_worker"
-	quantity = "50"
-	delay = "5"
-	in_queue = ".class.Queue"
-	in_queue_name = "initial_queue"
-	out_queue = ".class.Queue"
-	out_queue_name = "initial_queue"
-	event = ".class.Event"
-	event_name ="event_"
-/>
+	<stage
+		name="Regular stage"
+		activity = "callable"
+		quantity = "50"
+		in_queue = "in-queue-name"
+		out_queue = "out-queue-name"
+		delay = "5"
+		event = "event-name" />
+
+</conveyor>
