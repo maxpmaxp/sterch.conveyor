@@ -39,7 +39,7 @@ class StageBase(object):
     
     def start(self):
         """ Start stage """
-        self.group.start_all()
+        self.group.start()
         
     def stop(self):
         """ Tries to stop stage """
@@ -90,7 +90,7 @@ class FirstStage(StageBase):
         """ Initial stage has no unfinished tasks."""
         return 0
     
-class LastStage(StageBase, InQueueMixin):
+class LastStage(InQueueMixin, StageBase):
     """ Last data processing stage. 
         Results generation.
     """
@@ -105,13 +105,14 @@ class LastStage(StageBase, InQueueMixin):
             delay --- processing delay
             activity --- callable represents stage activity 
         """
+        self._in_queue = in_queue
         w_factory = getUtility(IFactory, name="sterch.conveyor.LastWorker") 
         g_factory = getUtility(IFactory, name="sterch.conveyor.Group")
         w_args = (in_queue, event, delay, activity)
         group = g_factory(quantity, w_factory, *w_args)
         StageBase.__init__(self, name, group)
 
-class RegularStage(StageBase, InQueueMixin):
+class RegularStage(InQueueMixin, StageBase):
     """ Regular data processing stage. 
         Take tasks from input queue and put next tasks to output queue.
     """
@@ -126,8 +127,9 @@ class RegularStage(StageBase, InQueueMixin):
             delay --- processing delay
             activity --- callable represents stage activity 
         """
+        self._in_queue = in_queue
         w_factory = getUtility(IFactory, name="sterch.conveyor.RegularWorker") 
         g_factory = getUtility(IFactory, name="sterch.conveyor.Group")
-        w_args = (in_queue, event, delay, activity)
+        w_args = (in_queue, out_queue, event, delay, activity)
         group = g_factory(quantity, w_factory, *w_args)
         StageBase.__init__(self, name, group)

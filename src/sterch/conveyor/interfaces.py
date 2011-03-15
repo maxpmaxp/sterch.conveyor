@@ -15,13 +15,13 @@ from sterch.queue.interfaces import IQueue
 from sterch.threading.interfaces import IThread, IEvent
 from zope.interface import Interface
 from zope.interface.common.sequence import ISequence
-from zope.schema import Object, Int, Tuple, TextLine
+from zope.schema import Object, Int, Float, Tuple, TextLine
 
 class IEventMixin(Interface):
     event = Object(title=u"Event", schema=IEvent, required=True, readonly=True)
     
 class IDelayMixin(Interface):
-    delay = Int(title=u"Delay in sec. between activity cycles", min=0, default=0, required=True, readonly=True)
+    delay = Float(title=u"Delay in sec. between activity cycles", min=0.0, default=0.0, required=True, readonly=True)
     
 class IOutQueueMixin(Interface):
     out_queue = Object(title=u"Queue to put tasks", schema=IQueue, readonly=True, required=True)

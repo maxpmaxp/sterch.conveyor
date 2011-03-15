@@ -41,7 +41,7 @@ class FirstWorker(EventMixin,
         self.delay = delay
         self._event = event
         if activity:
-            self.activity = lambda self, *args,**kwargs: activity(*args, **kwargs)
+            self.activity = activity
                 
     def activity(self):
         raise NotImplementedError("Must be defined")
@@ -79,9 +79,7 @@ class LastWorker(EventMixin,
         self._in_queue = in_queue
         self.delay = delay
         self._event = event
-        self.activity = activity
-        if activity:
-            self.activity = lambda self, *args,**kwargs: activity(*args, **kwargs)
+        if activity:  self.activity = activity
     
     def activity(self):
         raise NotImplementedError("Must be defined")
@@ -93,7 +91,7 @@ class LastWorker(EventMixin,
             try:
                 try:
                     task = self.in_queue.get(timeout=self.delay)
-                    for next_task in self.activity(task): pass                        
+                    self.activity(task)                        
                 except Empty, ex:
                     pass
             except Exception, ex:
@@ -126,8 +124,7 @@ class Worker(EventMixin,
         self.delay = delay
         self._event = event
         self.activity = activity
-        if activity:
-            self.activity = lambda self, *args,**kwargs: activity(*args, **kwargs)
+        if activity: self.activity = activity
         
     def activity(self, item):
         raise NotImplementedError("Must be implemented")

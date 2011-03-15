@@ -33,7 +33,7 @@ class InQueueMixin(object):
     
     def has_tasks(self):
         """ Does queue have unfinished tasks. """
-        return self.in_queue.empty()
+        return not self.in_queue.empty()
     
     def tasks_count(self):
         """ Return number of unfinished tasks. """
@@ -55,7 +55,11 @@ class EventMixin(object):
 class LogMixin(object):
     @CachedProperty
     def log(self):
-        return queryUtility(ILog)
+        log = queryUtility(ILog)
+        class Log(object):
+            def message(self, value): print value
+        log = Log() if not log else log
+        return log
     
     def traceback(self, ex):
         msg = "ERROR:" + str(ex)

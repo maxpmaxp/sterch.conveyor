@@ -50,8 +50,7 @@ class Group(UserList):
     def filter_dead_workers(self):
         """ remove dead workers from the group """
         with self.locked:
-            for i in xrange(0, len(self)):
-                if not IThread(self[i]).isAlive() : del self[i]
+            self.data = filter(lambda t: IThread(t).isAlive(), self)
     
     def live_count(self):
         """ returns number of live workers """
