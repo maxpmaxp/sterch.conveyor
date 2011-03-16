@@ -16,15 +16,6 @@ from setup import TestSetup
 class Test(TestSetup):
     """Test the various zcml configurations"""
     
-    def test_correct_zcml_no_events(self):
-        pass
-    
-    def test_correct_zcml_with_events(self):
-        pass
-    
-    def test_2stages_only(self):
-        pass
-    
     def test_loop(self):
         pass
     

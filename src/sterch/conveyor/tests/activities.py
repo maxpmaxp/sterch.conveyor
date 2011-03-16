@@ -62,5 +62,4 @@ def check_results(job):
     global gl_jobs_counter, gl_N, gl_lock, gl_queue
     gl_queue.put(job)
     with gl_lock: gl_jobs_counter +=1
-    assert gl_jobs_counter <= gl_N
-    
+    assert gl_jobs_counter <= gl_N    

@@ -22,7 +22,7 @@ from setup import TestSetup
 from sterch.conveyor.interfaces import IConveyor
 from sterch.threading.interfaces import IEvent
 from unittest import TestCase, makeSuite, main
-from zope.component import queryUtility, getUtilitiesFor
+from zope.component import queryUtility, getUtility, getUtilitiesFor
 from zope.configuration.xmlconfig import XMLConfig
 
 EXECUTION_TIME_LIMIT = 60
@@ -30,7 +30,10 @@ EXECUTION_TIME_LIMIT = 60
 class Test(TestSetup):
     """Test the various zcml configurations"""
     
-    def _check_valid_config(self, config, uname):
+    def _clear_events(self):
+        map(lambda n,e:e.clear(), getUtilitiesFor(IEvent))
+    
+    def _check_valid_config(self, config, uname, task_field='result'):
         XMLConfig(config, zcml)()
         c = queryUtility(IConveyor, name=uname)
         self.assertTrue(c is not None)
@@ -44,7 +47,7 @@ class Test(TestSetup):
         try:
             while True:
                 task = q.get(False)
-                self.assertEqual(task['value'], task['result'])
+                self.assertEqual(task['value'], task[task_field])
         except Empty:
             pass
  
@@ -52,10 +55,20 @@ class Test(TestSetup):
         self._check_valid_config('valid_no_events.zcml', "Test #1")
 
     def test_correct_zcml_with_events(self):
+        self._clear_events()
         self._check_valid_config('valid_with_events.zcml', "Test #2")
         # check events
         for name, event in getUtilitiesFor(IEvent):
             self.assertTrue(event.isSet())
+            
+    def test_2stages_only_no_events(self):
+        self._check_valid_config('valid_2stages_no_events.zcml', "Test #3", task_field='value')
+    
+    def test_2stages_only_with_events(self):
+        self._clear_events()
+        self._check_valid_config('valid_2stages_with_events.zcml', "Test #4", task_field='value')
+        for name in (u'Event #1', u'Event #2',):
+            self.assertTrue(getUtility(IEvent, name=name).isSet())
         
 def test_suite():
     suite = makeSuite(Test)
