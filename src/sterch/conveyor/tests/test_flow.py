@@ -20,8 +20,9 @@ except ImportError:
     from Queue import Empty
 from setup import TestSetup
 from sterch.conveyor.interfaces import IConveyor
+from sterch.threading.interfaces import IEvent
 from unittest import TestCase, makeSuite, main
-from zope.component import queryUtility
+from zope.component import queryUtility, getUtilitiesFor
 from zope.configuration.xmlconfig import XMLConfig
 
 EXECUTION_TIME_LIMIT = 60
@@ -29,9 +30,9 @@ EXECUTION_TIME_LIMIT = 60
 class Test(TestSetup):
     """Test the various zcml configurations"""
     
-    def test_correct_zcml_no_events(self):
-        XMLConfig('valid_no_events.zcml', zcml)()
-        c = queryUtility(IConveyor, name="Test #1")
+    def _check_valid_config(self, config, uname):
+        XMLConfig(config, zcml)()
+        c = queryUtility(IConveyor, name=uname)
         self.assertTrue(c is not None)
         reset_jobs()
         c.start()
@@ -46,7 +47,16 @@ class Test(TestSetup):
                 self.assertEqual(task['value'], task['result'])
         except Empty:
             pass
-                   
+ 
+    def test_correct_zcml_no_events(self):
+        self._check_valid_config('valid_no_events.zcml', "Test #1")
+
+    def test_correct_zcml_with_events(self):
+        self._check_valid_config('valid_with_events.zcml', "Test #2")
+        # check events
+        for name, event in getUtilitiesFor(IEvent):
+            self.assertTrue(event.isSet())
+        
 def test_suite():
     suite = makeSuite(Test)
     return suite
