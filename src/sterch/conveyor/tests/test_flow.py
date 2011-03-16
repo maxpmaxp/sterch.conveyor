@@ -52,21 +52,21 @@ class Test(TestSetup):
             pass
  
     def test_correct_zcml_no_events(self):
-        self._check_valid_config('valid_no_events.zcml', "Test #1")
+        self._check_valid_config('valid_no_events.zcml', u"Test #1")
 
     def test_correct_zcml_with_events(self):
         self._clear_events()
-        self._check_valid_config('valid_with_events.zcml', "Test #2")
+        self._check_valid_config('valid_with_events.zcml', u"Test #2")
         # check events
         for name, event in getUtilitiesFor(IEvent):
             self.assertTrue(event.isSet())
             
     def test_2stages_only_no_events(self):
-        self._check_valid_config('valid_2stages_no_events.zcml', "Test #3", task_field='value')
+        self._check_valid_config('valid_2stages_no_events.zcml', u"Test #3", task_field='value')
     
     def test_2stages_only_with_events(self):
         self._clear_events()
-        self._check_valid_config('valid_2stages_with_events.zcml', "Test #4", task_field='value')
+        self._check_valid_config('valid_2stages_with_events.zcml', u"Test #4", task_field='value')
         for name in (u'Event #1', u'Event #2',):
             self.assertTrue(getUtility(IEvent, name=name).isSet())
         

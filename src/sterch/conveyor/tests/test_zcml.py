@@ -11,25 +11,37 @@
 __author__  = "Maxim Polscha (maxp@sterch.net)"
 __license__ = "ZPL" 
 
+import zcml
+
 from setup import TestSetup
+from unittest import TestCase, makeSuite, main
+from zope.configuration.xmlconfig import XMLConfig
+from zope.configuration.exceptions import ConfigurationError
 
 class Test(TestSetup):
     """Test the various zcml configurations"""
     
     def test_loop(self):
-        pass
-    
+        self.assertRaises(ConfigurationError, XMLConfig, *('loop.zcml', zcml)) 
+
+    def test_simple_loop(self):
+        self.assertRaises(ConfigurationError, XMLConfig, *('simple_loop.zcml', zcml)) 
+        
     def test_no_init_stage(self):
-        pass
-     
-    def test_no_2nd_stage(self):
-        pass
-    
+        self.assertRaises(ConfigurationError, XMLConfig, *('no_init_stage.zcml', zcml)) 
+                
     def test_no_final_stage(self):
-        pass
-    
+        self.assertRaises(ConfigurationError, XMLConfig, *('no_final_stage.zcml', zcml)) 
+        
     def test_final_stage_unreachable(self):
-        pass
-    
+        self.assertRaises(ConfigurationError, XMLConfig, *('final_stage_unreachable.zcml', zcml)) 
+        
     def test_dummy_stages(self):
-        pass
+        self.assertRaises(ConfigurationError, XMLConfig,* ('dummy_stages.zcml', zcml)) 
+
+def test_suite():
+    suite = makeSuite(Test)
+    return suite
+
+if __name__ == '__main__':
+    main(defaultTest='test_suite')        

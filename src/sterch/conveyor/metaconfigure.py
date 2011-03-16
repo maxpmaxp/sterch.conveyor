@@ -67,20 +67,24 @@ class ConveyorDirective(object):
             if s['out_queue'] in out_queues: raise ConfigurationError(u"Output queue could be used only in one stage.")
             if s['in_queue'] in in_queues: raise ConfigurationError(u"Input queue could be used only in one stage.")
             if s['out_queue'] in out_queues: raise ConfigurationError(u"Output queue could be used only in one stage.")
+            if s.get('marker') == curq : raise ConfigurationError("Final stage unreachable")
             if s['in_queue'] == curq:
                 ordered_stages.append(s)
                 curq = s['out_queue']
                 in_queues.append(s['in_queue'])
                 out_queues.append(s['out_queue'])
             else:
+                s['marker'] = curq
                 self.stages = [s,] + self.stages
         if self.stages: ConfigurationError(u"There are dummy stages within the conveyor")
         if ordered_stages[-1]['out_queue'] != self.final_stage_vars['in_queue']:
-            ConfigurationError(u"Conveyor must be finished with final_stage.")            
+            raise ConfigurationError(u"Conveyor must be finished with final_stage.")            
         ordered_stages.append(self.final_stage_vars)
+        # removing markers
+        for s in ordered_stages: 
+            if 'marker' in s: del s['marker']
         # constructing the conveyor
         __stages = []
-
         # 1st stage
         s = ordered_stages[0]
         __stages.append(createObject('sterch.conveyor.FirstStage', **s))
