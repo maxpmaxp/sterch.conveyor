@@ -19,13 +19,14 @@ from zope.schema import TextLine, Int, Float
        
 class IConveyorDirective(IName):
     """ <conveyor ...>  complex directive interface """
+    delay = Float(title=u"Delay to wait stages in queue (sec., 5 by default)", min=0.0, required=False, default=5.0)
     
 class IStageBase(IName):
     """ generic stage fields """
     activity = GlobalObject(title=u"Callable object to process tasks on the stage.",
                             constraint=lambda obj:hasattr(obj,'__call__'))
     quantity = Int(title=u"Number of workers for the stage.", min=0, required=True)
-    delay = Int(title=u"Delay to wait tasks in queue (sec., 3 by default)", min=0, required=False, default=3)
+    delay = Float(title=u"Delay to wait tasks in queue (sec., 3 by default)", min=0.0, required=False, default=3.0)
     event = TextLine(title=u"IEvent utility name to stop workers.",
                      description=u"""Optional. If not defined event ill be created.
                                    Could be used for other tasks synchronization.""",

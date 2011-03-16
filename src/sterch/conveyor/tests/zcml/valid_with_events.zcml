@@ -3,7 +3,7 @@
 	<include file="queue.zcml"/>
 	<include file="event.zcml"/>
 	
-	<conveyor name="Test #2">
+	<conveyor name="Test #2" delay="1.2">
 		<init_stage
 			name="Initial stage"
 			activity = "sterch.conveyor.tests.activities.jobs"

@@ -21,9 +21,10 @@ from zope.configuration.exceptions import ConfigurationError
 class ConveyorDirective(object):
     """ Conveyor directive handler """
     
-    def __init__(self, _context, name=None):
+    def __init__(self, _context, name=None, delay=5.0):
         self._context = _context
         self.name = name
+        self.delay = delay
         self.init_stage_vars = False
         self.final_stage_vars = False
         self.stages = []
@@ -89,7 +90,7 @@ class ConveyorDirective(object):
         #last stage
         s = ordered_stages[-1]
         __stages.append(createObject('sterch.conveyor.LastStage', **s))
-        conveyor = createObject('sterch.conveyor.Conveyor', self.name, __stages)
+        conveyor = createObject('sterch.conveyor.Conveyor', self.name, __stages, delay=self.delay)
         self._context.action(
             discriminator = ('utility', IConveyor, self.name),
             callable = handler,
