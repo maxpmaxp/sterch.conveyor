@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-0.1a (unreleased)
+0.1 (2011-03-17)
 ----------------
 	* regular workers: 
 		- FirstWorker (utilizes only one queue to put initial tasks)
@@ -21,3 +21,5 @@ CHANGES
 		- Conveyor
 	
 	* ZCML directives to register workers
+	
+	* Test cases
