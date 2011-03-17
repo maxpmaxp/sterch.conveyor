@@ -46,7 +46,7 @@ with other application threads.
 		quantity = "50"				   # Number of concurrent workers that does the activity
 		delay = "5"                    # Delay for getting/putting tasks     
 		out_queue = "out-queue-name"   # IQueue (see sterch.queue) utility name to output tasks
-		event = "event-name"/>         # Optional IEvent utility name.
+		event = "event-name"/>         # Optional IEvent (see sterch.threading) utility name.
 
 
 	<stage
