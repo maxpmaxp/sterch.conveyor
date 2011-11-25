@@ -2,6 +2,10 @@
 CHANGES
 =======
 
+0.1.2 (2011-11-25)
+------------------
+   * An error in raising ConfigurationError has been fixed (conveyor metadirective)
+
 0.1.1 (2011-11-25)
 ------------------
    * missing files have been added to the distribution

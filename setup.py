@@ -49,7 +49,7 @@ def alltests():
     return suite
 
 setup( name='sterch.conveyor',
-    version='0.1.1',
+    version='0.1.2',
     url='http://pypi.sterch.net/sterch.conveyor',
     license='ZPL 2.1',
     description='Provides ZCML-based tools to define simultaneous tasks processing conveyors',

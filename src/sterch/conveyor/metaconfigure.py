@@ -61,7 +61,7 @@ class ConveyorDirective(object):
         in_queues = []
         out_queues = [curq]
         while self.stages:
-            if curq not in self.all_in_queues: raise ConfigurationError(u"Output queue %s is never used as input" % curqueue)
+            if curq not in self.all_in_queues: raise ConfigurationError(u"Output queue %s is never used as input" % curq)
             s = self.stages.pop()
             if s['in_queue'] in in_queues: raise ConfigurationError(u"Input queue could be used only in one stage.")
             if s['out_queue'] in out_queues: raise ConfigurationError(u"Output queue could be used only in one stage.")
