@@ -2,6 +2,10 @@
 CHANGES
 =======
 
+0.1.1 (2011-11-25)
+------------------
+   * missing files have been added to the distribution
+   
 0.1 (2011-03-17)
 ----------------
 	* regular workers: 
