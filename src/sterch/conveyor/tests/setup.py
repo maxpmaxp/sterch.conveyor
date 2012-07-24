@@ -1,9 +1,6 @@
 ### -*- coding: utf-8 -*- #############################################
-# Разработано компанией Стерх (http://sterch.net/)
-# Все права защищены, 2010
-#
-# Developed by Sterch (http://sterch.net/)
-# All right reserved, 2010
+# Developed by Maksym Polshcha (maxp@sterch.net)
+# All right reserved, 2012
 #######################################################################
 
 """ Base test classes for sterch.conveyor
@@ -11,7 +8,6 @@
 __author__  = "Maxim Polscha (maxp@sterch.net)"
 __license__ = "ZPL" 
 
-import sterch.logfile
 import sterch.queue
 import sterch.threading
 import zope.app.component
@@ -27,9 +23,7 @@ class TestSetup(PlacelessSetup, TestCase):
         XMLConfig('meta.zcml', zope.app.component)()
         XMLConfig('meta.zcml', sterch.threading)()
         XMLConfig('meta.zcml', sterch.queue)()
-        XMLConfig('meta.zcml', sterch.logfile)()
         XMLConfig('meta.zcml', sterch.conveyor)()
         XMLConfig('configure.zcml', sterch.threading)()
         XMLConfig('configure.zcml', sterch.queue)()
-        XMLConfig('configure.zcml', sterch.logfile)() 
         XMLConfig('configure.zcml', sterch.conveyor)()

@@ -1,9 +1,6 @@
 ### -*- coding: utf-8 -*- #############################################
-# Разработано компанией Стерх (http://sterch.net/)
-# Все права защищены, 2008
-#
-# Developed by Sterch (http://sterch.net/)
-# All right reserved, 2008
+# Developed by Maksym Polshcha (maxp@sterch.net)
+# All right reserved, 2012
 #######################################################################
 
 """Metadirectives implementations for the ZTK based sterch.threading package
@@ -76,7 +73,7 @@ class ConveyorDirective(object):
             else:
                 s['marker'] = curq
                 self.stages = [s,] + self.stages
-        if self.stages: ConfigurationError(u"There are dummy stages within the conveyor")
+        if self.stages: raise ConfigurationError(u"There are dummy stages within the conveyor")
         if ordered_stages[-1]['out_queue'] != self.final_stage_vars['in_queue']:
             raise ConfigurationError(u"Conveyor must be finished with final_stage.")            
         ordered_stages.append(self.final_stage_vars)

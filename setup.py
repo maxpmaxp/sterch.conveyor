@@ -1,9 +1,6 @@
 ### -*- coding: utf-8 -*- #############################################
-# Разработано компанией Стерх (http://sterch.net/)
-# Все права защищены, 2008
-#
-# Developed by Sterch (http://sterch.net/)
-# All right reserved, 2008
+# Developed by Maksym Polshcha (maxp@sterch.net)
+# All right reserved, 2012
 #######################################################################
 
 """setup script class for the ZTK-based sterch.conveyor package
@@ -49,7 +46,7 @@ def alltests():
     return suite
 
 setup( name='sterch.conveyor',
-    version='0.1.2',
+    version='0.2',
     url='http://pypi.sterch.net/sterch.conveyor',
     license='ZPL 2.1',
     description='Provides ZCML-based tools to define simultaneous tasks processing conveyors',
@@ -83,7 +80,6 @@ setup( name='sterch.conveyor',
                         'zope.component',
                         'sterch.threading',
                         'sterch.queue',
-                        'sterch.logfile',
                         ],
     extras_require={'test': ['zope.testing'],},                        
     test_suite='__main__.alltests',

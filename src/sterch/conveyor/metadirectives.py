@@ -1,9 +1,6 @@
 ### -*- coding: utf-8 -*- #############################################
-# Разработано компанией Стерх (http://sterch.net/)
-# Все права защищены, 2010
-#
-# Developed by Sterch (http://sterch.net/)
-# All right reserved, 2010
+# Developed by Maksym Polshcha (maxp@sterch.net)
+# All right reserved, 2012
 #######################################################################
 
 """ZCML directives interfaces for the ZTK based sterch.conveyor package

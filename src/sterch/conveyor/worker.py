@@ -1,9 +1,6 @@
 ### -*- coding: utf-8 -*- #############################################
-# Разработано компанией Стерх (http://sterch.net/)
-# Все права защищены, 2010
-#
-# Developed by Sterch (http://sterch.net/)
-# All right reserved, 2010
+# Developed by Maksym Polshcha (maxp@sterch.net)
+# All right reserved, 2012
 #######################################################################
 
 """ Workers for sterch.conveyor package """
@@ -37,6 +34,7 @@ class FirstWorker(EventMixin,
                activity --- callable represents worker activity
         """
         Thread.__init__(self)
+        self.daemon = True
         self._out_queue = out_queue
         self.delay = delay
         self._event = event
@@ -48,19 +46,17 @@ class FirstWorker(EventMixin,
     
     def run(self):
         """ Worker's workcycle """
-        while True:
-            if self.event.isSet(): return
-            try:
-                for task in self.activity():
-                    while True:
-                        try:
-                            self.out_queue.put(task, timeout=self.delay)
-                            break
-                        except Full, ex:
-                            pass
-            except Exception, ex:
-                # Thread must stop if and only if event is set
-                self.traceback(ex)
+        if self.event.isSet(): return
+        try:
+            for task in self.activity():
+                while True:
+                    try:
+                        self.out_queue.put(task, timeout=self.delay)
+                        break
+                    except Full, ex:
+                        pass
+        except Exception, ex:
+            self.traceback(ex)
 
 class LastWorker(EventMixin, 
                  InQueueMixin,
@@ -76,6 +72,7 @@ class LastWorker(EventMixin,
                activity --- callable represents worker activity
         """
         Thread.__init__(self)
+        self.daemon = True
         self._in_queue = in_queue
         self.delay = delay
         self._event = event
@@ -119,6 +116,7 @@ class Worker(EventMixin,
                         Returned value will be placed to out_queue if not None.
         """
         Thread.__init__(self)
+        self.daemon = True
         self._in_queue = in_queue
         self._out_queue = out_queue
         self.delay = delay

@@ -1,9 +1,6 @@
 ### -*- coding: utf-8 -*- #############################################
-# Разработано компанией Стерх (http://sterch.net/)
-# Все права защищены, 2010
-#
-# Developed by Sterch (http://sterch.net/)
-# All right reserved, 2010
+# Developed by Maksym Polshcha (maxp@sterch.net)
+# All right reserved, 2012
 #######################################################################
 
 """ Help classes
@@ -16,7 +13,6 @@ import traceback
 import sys
 
 from sterch.queue.interfaces import IQueue
-from sterch.logfile.interfaces import ILog
 from sterch.threading.interfaces import IEvent
 from StringIO import StringIO
 from zope.cachedescriptors.property import CachedProperty
@@ -53,21 +49,11 @@ class EventMixin(object):
         return getUtility(IEvent, name=self._event)
     
 class LogMixin(object):
-    @CachedProperty
-    def log(self):
-        log = queryUtility(ILog)
-        class Log(object):
-            def message(self, value): print value
-        log = Log() if not log else log
-        return log
-    
+        
     def traceback(self, ex):
         msg = "ERROR:" + str(ex)
         tb = StringIO()
         exceptionType, exceptionValue, exceptionTraceback = sys.exc_info()
         traceback.print_exception(exceptionType, exceptionValue, exceptionTraceback, file=tb)
         msg = msg + "\n" + tb.getvalue()
-        if self.log: 
-            self.log.message(msg)
-        else:
-            print msg
+        print msg
