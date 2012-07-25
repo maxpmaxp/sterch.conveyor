@@ -7,6 +7,7 @@ CHANGES
    * got rid of sterch.logfile
    * metadirective error rising fixed
    * multiple initial stages when the only is defined fixed
+   * git rid of zope.app.component in the testcases
    
 0.1.2 (2011-11-25)
 ------------------

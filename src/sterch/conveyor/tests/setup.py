@@ -10,7 +10,7 @@ __license__ = "ZPL"
 
 import sterch.queue
 import sterch.threading
-import zope.app.component
+import zope.component, zope.security
 from unittest import TestCase, makeSuite, main
 from zope.component.testing import PlacelessSetup
 from zope.configuration.xmlconfig import XMLConfig 
@@ -20,7 +20,8 @@ class TestSetup(PlacelessSetup, TestCase):
     
     def setUp(self):
         super(TestSetup, self).setUp()
-        XMLConfig('meta.zcml', zope.app.component)()
+        XMLConfig('meta.zcml', zope.component)()
+        XMLConfig('meta.zcml', zope.security)()
         XMLConfig('meta.zcml', sterch.threading)()
         XMLConfig('meta.zcml', sterch.queue)()
         XMLConfig('meta.zcml', sterch.conveyor)()
