@@ -48,13 +48,17 @@ class FirstWorker(EventMixin,
         """ Worker's workcycle """
         if self.event.isSet(): return
         try:
-            for task in self.activity():
-                while True:
-                    try:
-                        self.out_queue.put(task, timeout=self.delay)
-                        break
-                    except Full, ex:
-                        pass
+            all_tasks = self.activity()
+            if all_tasks is not None:
+                if not hasattr(all_tasks, '__iter__'):
+                    raise ValueError("Activity result must be iterable or None")
+                for task in all_tasks:
+                    while True:
+                        try:
+                            self.out_queue.put(task, timeout=self.delay)
+                            break
+                        except Full, ex:
+                            pass
         except Exception, ex:
             self.traceback(ex)
 
@@ -134,13 +138,17 @@ class Worker(EventMixin,
             try:
                 try:
                     task = self.in_queue.get(timeout=self.delay)
-                    for new_task in self.activity(task):
-                        while True:
-                            try:
-                                self.out_queue.put(new_task, timeout=self.delay)
-                                break
-                            except Full, ex:
-                                pass
+                    all_tasks = self.activity(task)
+                    if all_tasks is not None:
+                        if not hasattr(all_tasks, '__iter__'):
+                            raise ValueError("Activity result must be iterable or None")
+                        for new_task in all_tasks:
+                            while True:
+                                try:
+                                    self.out_queue.put(new_task, timeout=self.delay)
+                                    break
+                                except Full, ex:
+                                    pass
                 except Empty, ex:
                     pass
             except Exception, ex:
