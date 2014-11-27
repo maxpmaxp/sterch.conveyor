@@ -1,12 +1,13 @@
 ### -*- coding: utf-8 -*- #############################################
 # Developed by Maksym Polshcha (maxp@sterch.net)
-# All right reserved, 2012
+# All right reserved, 2012-2014
 #######################################################################
 
 """ Conveyor for the sterch.conveyor package """
 __author__  = "Polshcha Maxim (maxp@sterch.net)"
 __license__ = "ZPL"
 
+import logging
 from assistance import LogMixin
 from interfaces import IConveyor, IStage
 from threading import Thread
@@ -35,19 +36,19 @@ class Conveyor(Thread, LogMixin):
     def run(self):
         """ main conveyor activity """
         # start all stages
-        print "Starting all stages."
+        logging.info("Starting all stages.")
         map(lambda s:s.start(), self.stages)
         
         for stage in self.stages:
             # Wait for queue
             while stage.has_tasks():
-                print "Waiting for stage %s. %s tasks queued." % (stage.name, stage.tasks_count())
+                logging.info("Waiting for stage %s. %s tasks queued." % (stage.name, stage.tasks_count()))
                 sleep(self.delay)
             stage.stop()
-            print "Stage %s. All tasks were completed." % stage.name
+            logging.info("Stage %s. All tasks were completed." % stage.name)
             # wait for  workers
             while not stage.is_finished() :
-                print "Stage %s. Waiting for workers. There are %s active workers." % (stage.name, stage.workers_count())
+                logging.info("Stage %s. Waiting for workers. There are %s active workers." % (stage.name, stage.workers_count()))
                 sleep(self.delay)
-            print "Stage %s. All workers were stopped." % stage.name
-        print "Done."
+            logging.info("Stage %s. All workers were stopped." % stage.name)
+        logging.info("Done.")

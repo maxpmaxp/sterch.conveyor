@@ -1,6 +1,6 @@
 ### -*- coding: utf-8 -*- #############################################
 # Developed by Maksym Polshcha (maxp@sterch.net)
-# All right reserved, 2012
+# All right reserved, 2012-2014
 #######################################################################
 
 """setup script class for the ZTK-based sterch.conveyor package
@@ -46,9 +46,9 @@ def alltests():
     return suite
 
 setup( name='sterch.conveyor',
-    version='0.2.1',
-    url='http://pypi.sterch.net/sterch.conveyor',
-    license='ZPL 2.1',
+    version='0.2.2',
+    url='https://github.com/maxpmaxp/sterch.conveyor',
+    license='ZPL 2.2',
     description='Provides ZCML-based tools to define simultaneous tasks processing conveyors',
     author='Maksym Polscha',
     author_email='maxp@sterch.net',

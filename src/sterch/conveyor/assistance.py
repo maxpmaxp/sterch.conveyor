@@ -1,6 +1,6 @@
 ### -*- coding: utf-8 -*- #############################################
 # Developed by Maksym Polshcha (maxp@sterch.net)
-# All right reserved, 2012
+# All right reserved, 2012-2014
 #######################################################################
 
 """ Help classes
@@ -9,6 +9,7 @@
 __author__  = "Polshcha Maxim (maxp@sterch.net)"
 __license__ = "ZPL"
 
+import logging
 import traceback
 import sys
 
@@ -51,9 +52,9 @@ class EventMixin(object):
 class LogMixin(object):
         
     def traceback(self, ex):
-        msg = "ERROR:" + str(ex)
+        msg = str(ex)
         tb = StringIO()
         exceptionType, exceptionValue, exceptionTraceback = sys.exc_info()
         traceback.print_exception(exceptionType, exceptionValue, exceptionTraceback, file=tb)
         msg = msg + "\n" + tb.getvalue()
-        print msg
+        logging.error(msg)
